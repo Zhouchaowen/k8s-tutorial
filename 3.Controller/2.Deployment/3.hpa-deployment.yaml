@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php
+spec:
+  selector:
+    matchLabels:
+      run: php
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: php
+    spec:
+      containers:
+        - name: php
+          image: hpa-php:test
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 400m
+            requests:
+              cpu: 200m
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php
+  labels:
+    run: php
+spec:
+  ports:
+    - port: 80
+  selector:
+    run: php

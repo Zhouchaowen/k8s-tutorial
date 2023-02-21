@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  volumes:            # 定义名称为 varlog 的volume
+    - name: varlog
+      hostPath:
+        path: /var/log/counter
+  containers:
+    - name: count     # 容器 1
+      image: busybox
+      args:
+        - /bin/sh
+        - -c
+        - >
+          i=0;
+          while true;
+          do
+            echo "$i: $(date)" >> /var/log/1.log;
+            i=$((i+1));
+            sleep 1;
+          done
+      volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+    - name: count-log   # 容器 2
+      image: busybox
+      args: [/bin/sh, -c, 'tail -n+1 -f /var/log/1.log']
+      volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+
+# 判断是否需要在 Pod 中使用多个容器的时候，我们可以按照如下的几个方式来判断：
+#
+# 1.这些容器是否一定需要一起运行，是否可以运行在不同的节点上
+# 2.这些容器是一个整体还是独立的组件
+# 3.这些容器一起进行扩缩容会影响应用吗

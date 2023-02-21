@@ -1,0 +1,17 @@
+apiVersion: v1                  #版本
+kind: Pod                       #资源类型
+metadata:                       #元数据
+  name: maria-pod               #service的名称
+  labels:                       #自定义标签属性列表
+    app: wordpress
+    role: database
+spec:                           #详细描述
+  containers:
+    - image: mariadb:10         #镜像地址
+      name: maria               #镜像名称
+      ports:
+        - containerPort: 3306   #端口
+      envFrom:
+        - prefix: 'MARIADB_'
+          configMapRef:
+            name: maria-cm

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-demo1
+spec:
+  containers:
+    - name: resource-demo1
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      resources:
+        requests:     # requests 集群调度使用的资源
+          memory: 50Mi
+          cpu: 50m
+        limits:       # limits 容器资源限制的配置
+          memory: 100Mi
+          cpu: 100m

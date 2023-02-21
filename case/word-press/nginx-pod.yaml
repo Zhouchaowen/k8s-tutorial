@@ -1,0 +1,13 @@
+apiVersion: v1                  #版本
+kind: Pod                       #资源类型
+metadata:                       #元数据
+  name: ngx-pod                 #service的名称
+  labels:                       #自定义标签属性列表
+    env: demo
+    owner: zcw
+spec:                           #详细描述
+  containers:
+    - image: nginx:alpine       #镜像地址
+      name: ngx                 #镜像名称
+      ports:
+        - containerPort: 80     #端口

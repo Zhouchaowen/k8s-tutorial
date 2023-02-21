@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name:  nginx-rs
+  namespace: default
+spec:
+  replicas: 3     # 期望的 Pod 副本数量，默认值为1
+  selector:       # Label Selector，必须匹配 Pod 模板中的标签
+    matchLabels:  # 用来匹配要控制的 Pod 标签，需要和下面的 Pod 模板中的标签一致
+      app: nginx
+  template:       # Pod 模板，相当于把一个 Pod 的描述以模板的形式嵌入到了 ReplicaSet 中来。
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+
+
+# kubectl apply -f nginx-rs.yaml
+# kubectl get rs nginx-rs
+# kubectl get pods -l app=nginx
+# kubectl delete pod podNamexxx
+# kubectl describe rs nginx-rs
+# kubectl delete rs nginx-rs
