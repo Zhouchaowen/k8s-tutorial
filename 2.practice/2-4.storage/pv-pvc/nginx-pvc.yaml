@@ -1,0 +1,12 @@
+# 定义PVC，用于消费PV
+apiVersion: v1
+kind: PersistentVolumeClaim   # 类型
+metadata:
+  name: nginx-pvc             # PVC的名称
+  namespace: dev
+spec:
+  accessModes:                # 访问模式
+    - ReadWriteMany           # PVC以read-write挂载到多个节点
+  resources:
+    requests:
+      storage: 2Gi            # PVC允许申请的大小

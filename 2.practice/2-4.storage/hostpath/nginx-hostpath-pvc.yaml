@@ -1,0 +1,52 @@
+# 定义PV
+---
+apiVersion: v1
+kind: PersistentVolume        # 类型为PV
+metadata:
+  name: host-path-pv           # PV的名称
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi             # PV可用的大小
+  accessModes:
+    - ReadWriteOnce          # PV以read-write挂载,只能被单个节点挂载
+  hostPath:
+    path: "/data/k8s/test/hostPath"
+
+# 定义PVC，用于消费PV
+---
+apiVersion: v1
+kind: PersistentVolumeClaim   # 类型
+metadata:
+  name: host-path-pvc          # PVC的名称
+spec:
+  storageClassName: manual
+  accessModes:                # 访问模式
+    - ReadWriteOnce           # PVC以read-write挂载,只能被单个节点挂载
+  resources:
+    requests:
+      storage: 1Gi            # PVC允许申请的大小
+
+# 定义Pod，指定需要使用的PVC
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-path-pvc-pod
+spec:
+  volumes:
+    - name: host-path-pvc
+      persistentVolumeClaim:
+        claimName: host-path-pvc
+  nodeSelector:                         # Pod只能调度到k8s-node01上
+    kubernetes.io/hostname: k8s-node01
+  containers:
+    - name: nginx-host-path-pvc
+      image: nginx:1.7.9
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: host-path-pvc

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service               # 资源类型 Service
+metadata:
+  name: wordpress           # 创建的 Service 名称为 wordpress
+  namespace: kube-example   # 命名空间名称 kube-example
+spec:
+  selector:                 # 匹配 标签为 app: wordpress 的容器, 管理这些容器
+    app: wordpress
+  type: NodePort            # 指定 Service 的类型 NodePort 分配主机映射
+  ports:
+    - name: web             # 为映射取个名称
+      port: 80              # 映射的端口
+      targetPort: wdport    # 目标端口 wordpress 容器监听的端口

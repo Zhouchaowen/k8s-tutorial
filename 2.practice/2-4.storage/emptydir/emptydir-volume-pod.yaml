@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  volumes:            # 定义名称为 varlog 的volume
+    - name: varlog
+      emptyDir: {}
+  containers:
+    - name: count     # 容器 1
+      image: busybox
+      args:
+        - /bin/sh
+        - -c
+        - >
+          i=0;
+          while true;
+          do
+            echo "$i: $(date)" >> /var/log/1.log;
+            i=$((i+1));
+            sleep 1;
+          done
+      volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+    - name: count-log   # 容器 2
+      image: busybox
+      args: [/bin/sh, -c, 'tail -n+1 -f /var/log/1.log']
+      volumeMounts:
+        - name: varlog
+          mountPath: /var/log

@@ -1,0 +1,56 @@
+# webapp-deployment.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  default.conf: |
+    server {
+      listen 80;
+      location / {
+        default_type text/plain;
+        return 200 'srv : $server_addr:$server_port\nhost: $hostname\n'
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  nginx-deploy
+  namespace: default
+spec:
+  replicas: 3     # 期望的 Pod 副本数量，默认值为1
+  selector:       # Label Selector，必须匹配 Pod 模板中的标签
+    matchLabels:
+      app: nginx-app
+  template:  # Pod 模板
+    metadata:
+      labels:
+        app: nginx-app
+    spec:
+      volumes:
+        - name: nginx-conf-vol
+          configMap:
+            name: nginx-conf
+      containers:
+        - name: nginx
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              name: nginx-conf-vol
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-app
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 80
+      nodePort: 30001
+  selector:
+    app: nginx-app

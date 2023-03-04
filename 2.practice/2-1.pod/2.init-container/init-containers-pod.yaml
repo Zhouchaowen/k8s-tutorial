@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-containers-demo
+spec:
+  volumes:              # volumes卷稍后介绍，用于临时存储数据
+    - name: workdir
+      emptyDir: {}
+  initContainers:       # 提前初始化容器命令
+    - name: install-index-html
+      image: busybox:1.28
+      command:          # 执行命令
+        - wget
+        - "-O"
+        - "/work-dir/index.html"
+        - http://www.baidu.com
+      volumeMounts:
+        - name: workdir
+          mountPath: "/work-dir"
+  containers:
+    - name: nginx
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: workdir
+          mountPath: /usr/share/nginx/html

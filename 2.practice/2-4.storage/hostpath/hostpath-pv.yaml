@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume        # 类型为PV
+metadata:
+  name: host-path-pv           # pv的名称
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi             # pv可用的大小
+  accessModes:
+    - ReadWriteOnce          # PV以read-write挂载到
+  hostPath:
+    path: "/data/k8s/test/hostPath"

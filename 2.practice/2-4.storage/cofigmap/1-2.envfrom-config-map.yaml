@@ -1,0 +1,22 @@
+# envfrom-config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-app-vars  # 定义名称为cm-app-vars的configMap获取值
+data:
+  appLogLevel: info     # key=appLogLevel, value=info
+  appDataDir: /var/data # key=appDataDir, value=/var/data
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-test-pod
+spec:
+  containers:
+    - name: cm-test
+      image: busybox:1.28
+      command: [ "/bin/sh", "-c", "env | grep app" ]
+      envFrom:
+      - configMapRef:
+          name: cm-app-vars
+  restartPolicy: Never

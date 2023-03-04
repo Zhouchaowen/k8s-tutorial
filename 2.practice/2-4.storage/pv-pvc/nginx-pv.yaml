@@ -1,0 +1,13 @@
+# 定义PV
+apiVersion: v1
+kind: PersistentVolume    # 类型为PV
+metadata:
+  name: nginx-pv          # pv的名称
+spec:
+  accessModes:            # 访问模式
+    - ReadWriteMany       # PV以read-write挂载到多个节点
+  capacity:               # 容量
+    storage: 2Gi          # pv可用的大小
+  nfs:
+    path: /nfs/data/      # NFS的路径
+    server: 10.2.0.106     # NFS服务器地址

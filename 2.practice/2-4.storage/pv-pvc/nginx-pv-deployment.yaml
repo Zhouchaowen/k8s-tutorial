@@ -1,0 +1,66 @@
+# 定义Namespace
+---
+apiVersion: v1
+kind: Namespace       # 资源类型
+metadata:
+  name: dev  # 命名空间名称 kube-example
+# 定义PV
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv    # pv的名称
+spec:
+  accessModes:      # 访问模式
+    - ReadWriteMany # PV以read-write挂载到多个节点
+  capacity:         # 容量
+    storage: 2Gi    # pv可用的大小
+  nfs:
+    path: /nfs/data/     # NFS的挂载路径
+    server: 10.2.0.106    # NFS服务器地址
+
+# 定义PVC，用于消费PV
+---
+apiVersion: v1
+kind: PersistentVolumeClaim   # 类型
+metadata:
+  name: nginx-pvc             # PVC 的名字
+  namespace: dev              # 命名空间
+spec:
+  accessModes:                # 访问模式
+    - ReadWriteMany           # PVC以read-write挂载到多个节点
+  resources:
+    requests:
+      storage: 2Gi            # PVC允许申请的大小
+
+# 定义Pod，指定需要使用的PVC
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-pvc
+  namespace: dev   # 如果前面的PVC指定了命名空间这里必须指定与PVC一致的命名空间，否则PVC不可用
+spec:
+  selector:
+    matchLabels:
+      app: nginx-pvc
+  template:
+    metadata:
+      labels:
+        app: nginx-pvc
+    spec:
+      containers:
+        - name: nginx-test-pvc
+          image: nginx:1.7.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: web-port
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: nginx-persistent-storage    # 取个名字，与下面的volumes的名字要一致
+              mountPath: /usr/share/nginx/html  # 容器中的路径
+      volumes:
+        - name: nginx-persistent-storage
+          persistentVolumeClaim:
+            claimName: nginx-pvc  # 引用前面声明的PVC

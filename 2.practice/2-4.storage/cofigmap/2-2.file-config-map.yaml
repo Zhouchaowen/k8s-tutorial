@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-app-config-files
+data:
+  key-server-xml: |
+    <?xml version='1.0' encoding='utf-8'?>
+    <Server port="8005" shutdown="SHUTDOWN">
+      ......
+    </Server>
+  key-logging-properties: "logging-properties content"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-test-app
+spec:
+  containers:
+    - name: cm-test-app
+      image: busybox:1.28
+      command: [ "/bin/sh","-c","ls /config-files && cat /config-files/key-server-xml && cat /config-files/key-logging-properties" ]
+      volumeMounts:
+        - name: server-xml
+          mountPath: /config-files
+  volumes:
+    - name: server-xml
+      configMap:
+        name: cm-app-config-files

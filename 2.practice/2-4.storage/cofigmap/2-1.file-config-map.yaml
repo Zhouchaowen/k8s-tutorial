@@ -1,0 +1,34 @@
+# file-config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-app-config-files
+data:
+  key-server-xml: |
+    <?xml version='1.0' encoding='utf-8'?>
+    <Server port="8005" shutdown="SHUTDOWN">
+      ......
+    </Server>
+  key-logging-properties: "logging-properties content"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-test-app
+spec:
+  containers:
+    - name: cm-test-app
+      image: busybox:1.28
+      command: [ "/bin/sh","-c","ls /config-files && cat /config-files/server.xml && cat /config-files/logging.properties" ]
+      volumeMounts:
+        - name: server-xml              # 引用名称为server-xml的volume
+          mountPath: /config-files      # 挂载到容器的目录
+  volumes:
+    - name: server-xml                  # 定义volume的名称
+      configMap:                        # volume的值引用configMap
+        name: cm-app-config-files       # 引用名称为cm-app-config-files的configMap
+        items:
+          - key: key-server-xml         # 引用的key
+            path: server.xml            # 映射key为key-server-xml的值到文件server.xml
+          - key: key-logging-properties # 引用的key
+            path: logging.properties    # 映射key为key-logging-properties的值到文件logging.properties

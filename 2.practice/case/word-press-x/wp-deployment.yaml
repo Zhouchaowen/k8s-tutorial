@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service               # 资源类型 Service
+metadata:
+  name: wordpress           # 创建的 Service 名称为 wordpress
+  namespace: kube-example   # 命名空间名称 kube-example
+spec:
+  selector:                 # 匹配 标签为 app: wordpress, tier: frontend 的容器, 管理这些容器
+    app: wordpress
+    tier: frontend
+  type: NodePort            # 指定 Service 的类型 NodePort 分配主机映射
+  ports:
+    - name: web             # 为映射取个名称
+      port: 80              # 映射的端口
+      targetPort: wdport    # 目标端口 wordpress 容器监听的端口
+---
+apiVersion: apps/v1
+kind: Deployment            # 资源类型 Deployment
+metadata:
+  name: wordpress           # 创建的 Deployment 名称为 wordpress
+  namespace: kube-example   # 创建的 Deployment 属于 kube-example 命名空间
+  labels:
+    app: wordpress          # 创建的 Deployment 标签 app: wordpress
+    tier: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:            # 选择 标签为 app: wordpress 的容器, 管理这些容器
+      app: wordpress
+      tier: frontend
+  template:                 # 定义容器模板
+    metadata:               # 定义容器标签, 供 selector.matchLabels 匹配
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      containers:           # 定义容器
+        - name: wordpress   # 第一个容器名称 wordpress
+          image: wordpress:5.3.2-apache   # 定义使用的镜像
+          readinessProbe:   # 应用就绪探针
+            tcpSocket:      # TCP 80 端口监控
+              port: 80
+            initialDelaySeconds: 5        # 第一次执行探针的时候要等待5秒
+            periodSeconds: 5              # 每隔5秒执行一次就绪探针
+          ports:
+            - containerPort: 80           # 开放容器端口
+              name: wdport                # 为当前容器端口起别名
+          env:                            # 定义当前容器环境变量
+            - name: WORDPRESS_DB_HOST
+              value: wordpress-mysql:3306
+            - name: WORDPRESS_DB_USER
+              value: wordpress
+            - name: WORDPRESS_DB_PASSWORD
+              value: wordpress

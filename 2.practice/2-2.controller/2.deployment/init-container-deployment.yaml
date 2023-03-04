@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-container-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: init-container-app
+  template:
+    metadata:
+      labels:
+        app: init-container-app
+    spec:
+      initContainers:
+        - command:
+            - "/bin/sh"
+            - "-c"
+            - "echo 'message from init' > /init-container-msg-mount-path/this"
+          image: busybox
+          name: init-container
+          volumeMounts:
+            - mountPath: /init-container-mount-path
+              name: init-container-volume
+      containers:
+        - command:
+            - "/bin/sh"
+            - "-c"
+            - "while true; do cat /init-container-msg-mount-path/this; sleep 5; done"
+          image: busybox
+          name: init-container-main
+          volumeMounts:
+            - mountPath: /init-container-mount-path
+              name: init-container-volume
+      volumes:
+        - emptyDir: {}
+          name: init-container-volume

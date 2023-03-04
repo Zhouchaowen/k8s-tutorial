@@ -1,0 +1,12 @@
+# 防止节点驱逐时造成的不可以
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: wordpress-pdb
+  namespace: kube-example
+spec:
+  maxUnavailable: 1       # 最多1个副本不能用
+  selector:
+    matchLabels:          # 选择要管理的 Pod
+      app: wordpress
+      tier: frontend

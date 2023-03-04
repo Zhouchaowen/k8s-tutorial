@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace       # 资源类型
+metadata:
+  name: kube-example  # 命名空间名称 kube-example

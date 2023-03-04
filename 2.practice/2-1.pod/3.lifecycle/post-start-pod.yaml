@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-post-start-demo
+spec:
+  containers:
+    - name: lifecycle-post-start-demo
+      image: nginx:alpine
+      lifecycle:
+        postStart:    # 容器创建后立即执行
+          exec:
+            command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]

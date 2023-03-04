@@ -1,0 +1,37 @@
+# 例1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-pre-stop-demo
+spec:
+  containers:
+    - name: lifecycle-pre-stop-demo
+      image: nginx:alpine
+      lifecycle:
+        preStop:      # 容器终止之前立即被调用
+          exec:
+            command: ["/usr/sbin/nginx","-s","quit"]  # 优雅退出
+# 例2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: lifecycle-pre-stop-demo
+spec:
+  volumes:
+    - name: message
+      hostPath:
+        path: /tmp
+  containers:
+    - name: lifecycle-pre-stop-demo
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: message
+          mountPath: /usr/share/
+      lifecycle:
+        preStop:
+          exec:
+            command: ['/bin/sh', '-c', 'echo Hello from the preStop Handler > /usr/share/message']
