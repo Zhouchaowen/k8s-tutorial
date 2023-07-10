@@ -1,9 +1,0 @@
-apiVersion: v1                  #版本
-kind: ConfigMap                 #资源类型
-metadata:                       #元数据
-  name: maria-cm
-data:
-  DATABASE: 'db'
-  USER: 'wp'
-  PASSWORD: '123'
-  ROOT_PASSWORD: '123'

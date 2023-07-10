@@ -15,7 +15,6 @@ spec:
           printenv MY_MEM_REQUEST MY_MEM_LIMIT;
           sleep 10;
           done;
-      args:
         - while true; do
           echo -en '\n';
           printenv MY_CPU_REQUEST MY_CPU_LIMIT;
@@ -32,9 +31,9 @@ spec:
       env:
         - name: MY_CPU_REQUEST        # 定义容器环境变量
           valueFrom:
-            resourceFieldRef:         # 通过引用container本身属性当做值
+            resourceFieldRef:               # 通过引用container本身属性当做值
               containerName: test-container # 引用的container的名称
-              resource: requests.cpu  # 引用资源限制的字段
+              resource: requests.cpu        # 引用资源限制的字段
         - name: MY_CPU_LIMIT
           valueFrom:
             resourceFieldRef:

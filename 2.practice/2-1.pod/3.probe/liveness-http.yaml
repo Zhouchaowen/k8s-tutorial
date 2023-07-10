@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-http
+spec:
+  containers:
+    - name: liveness
+      image: cnych/liveness
+      args:
+        - /server
+      livenessProbe:
+        httpGet:            # 存活探针 httpGet 类型，通过向容器发送 HTTP 请求并检查响应状态码来确定容器的健康状态
+          path: /health     # 指定发送探测请求的路径为/health
+          port: 8080        # 指定容器内接收探测请求的端口号为8080
+          httpHeaders:      # 指定http请求头字段
+            - name: X-Custom-Header
+              value: Awesome
+        initialDelaySeconds: 5  # 第一次执行探针的时候要等待5秒
+        periodSeconds: 5        # 每隔5秒执行一次存活探针
+        timeoutSeconds: 5       # 探测超时，到了超时时间探测还没返回结果说明失败
+        successThreshold: 1     # 成功阈值，连续几次成才算成功
+        failureThreshold: 3     # 失败阈值，连续几次失败才算真失败

@@ -8,7 +8,7 @@ spec:
   selector:       # Label Selector，必须匹配 Pod 模板中的标签
     matchLabels:
       app: nginx
-  template:  # Pod 模板
+  template:       # Pod 模板
     metadata:
       labels:
         app: nginx
@@ -18,21 +18,3 @@ spec:
           image: nginx:alpine
           ports:
             - containerPort: 80
-
-# kubectl create -f nginx-deployment.yaml
-# kubectl get pods
-# kubectl get deployment
-# kubectl get deployment -l chapter=first-app
-# kubectl get pods -l app=nginx
-# kubectl describe pod nginx-deploy-xxxx
-
-# kubectl apply -f nginx-deployment.yaml
-# kubectl get pods -l app=nginx --watch
-# kubectl get pods -l app=nginx -n default
-# kubectl delete -f nginx-deployment.yaml
-
-# 水平扩缩容
-# kubectl scale deployment nginx-deploy --replicas=4
-# kubectl get rs
-# kubectl describe rs nginx-deploy-xxx
-# kubectl describe deploy nginx-deploy

@@ -10,7 +10,7 @@ spec:
       app: nginx
   template:       # Pod 模板，相当于把一个 Pod 的描述以模板的形式嵌入到了 ReplicaSet 中来。
     metadata:
-      labels:
+      labels:     # 必须和 matchLabels 中的匹配
         app: nginx
     spec:
       containers:

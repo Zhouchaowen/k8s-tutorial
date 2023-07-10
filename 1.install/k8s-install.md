@@ -451,8 +451,6 @@ kubeadm join 10.2.0.101:6443 --token 5e3xnr.t8t3skpec66d73zp \
     --discovery-token-ca-cert-hash sha256:7c5817d86c08913609c3b63a1bc459f285dcef9f37d50919242aa71e1141f82f
 ```
 
-
-
 ## 清理集群
 
 ```bash
@@ -466,6 +464,18 @@ iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
 ip a
 ifconfig cni0 down    
 ip link delete cni0
+```
+
+## 配置命令补全
+
+```bash
+# 安装 bash-completion 
+yum install -y bash-completion 
+
+# 配置 bash-completion 
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+kubectl completion bash >/etc/bash_completion.d/kubectl
+source /usr/share/bash-completion/bash_completion
 ```
 
 

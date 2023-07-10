@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: job-demo
 spec:
+  completions: 5 # 希望pod运行的次数
+  parallelism: 2 # 最大pod并行运行数量
   template:
     spec:
       restartPolicy: Never
@@ -15,4 +17,4 @@ spec:
             - "for i in 9 8 7 6 5 4 3 2 1; do echo $i; done"
 
 # ttlSecondsAfterFinished
-# activeDeadlineSeconds
+# activeDeadlineSeconds 设置最大运行时间

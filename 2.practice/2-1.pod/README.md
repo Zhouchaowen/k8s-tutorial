@@ -2,23 +2,26 @@
 
 Pod 里的所有容器，共享的是同一个 Network Namespace，并且可以声明共享同一个 Volume。
 
-Pod可以由1个或多个容器组合而成, 属于同一个Pod的多个容器应用之间相互访问时仅需通过localhost就可以通信，使得这一组容器被“绑定”在一个环境中。
+Pod可以由一个或多个容器组合而成, 属于同一个Pod的多个容器应用之间相互访问时仅需通过localhost就可以通信，使得这一组容器被“绑定”在一个环境中。
 
 ```yaml
 # 例1: nginx-pod.yaml
-apiVersion: v1                  #版本
+apiVersion: v1                  #k8sApi版本 kubectl api-resource 可以获取
 kind: Pod                       #资源类型
-metadata:                       #元数据
+# 以上为type信息
+metadata:                       #元数据:名称，命名空间，标签等
   name: ngx-pod                 #service的名称
   labels:                       #自定义标签属性列表
     env: demo
     owner: zcw
-spec:                           #详细描述
+# 以上为元数据部分
+spec:                           #期望状态：详细描述pod容器，卷等
   containers:
     - image: nginx:alpine       #镜像地址
       name: ngx                 #镜像名称
       ports:
         - containerPort: 80     #端口
+# 以上为资源规格描述部分
 ```
 
 创建Pod
@@ -36,7 +39,35 @@ kubectl get pods
 查看Pod详情
 
 ```bash
-kubectl describe pod podNameXXX
+kubectl describe pod ngx-pod
+```
+
+查看Pod日志
+
+```bash
+kubectl logs ngx-pod [-c containerName]
+```
+
+端口转发，访问Pod
+
+```bash
+kubectl port-forward ngx-pod 8080:80
+```
+
+通过标签选择Pod
+
+```bash
+kubectl get pod -l env
+```
+
+
+
+
+
+## 私有厂库拉取镜像
+
+```yaml
+
 ```
 
 ## init-container
@@ -393,6 +424,8 @@ spec:
 任何给定的 Pod 从不会被“重新调度（rescheduled）”到不同的节点； 相反，这一 Pod 可以被一个新的、几乎完全相同的 Pod 替换掉。
 
 如果某物声称其生命期与某 Pod 相同，例如存储[卷](https://kubernetes.io/zh-cn/docs/concepts/storage/volumes/)， 这就意味着该对象在此 Pod 存在期间也一直存在。 如果 Pod 因为任何原因被删除，甚至某完全相同的替代 Pod 被创建时， 这个相关的对象（例如这里的卷）也会被删除并重建。列如：Volume
+
+## 静态Pod
 
 
 

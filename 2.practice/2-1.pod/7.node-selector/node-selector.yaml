@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pod-node-selector-demo
+  name: pod-node-selector
 spec:
   containers:
-    - command: ["sleep", "3600"]
+    - name: pod-node-selector
       image: busybox:1.28
-      name: pod-node-selector-simple-container
+      command: ["sleep", "3600"]
   nodeSelector:
     node-role.kubernetes.io/master: "k8s-node01" # 该Pod只会调度到node01节点上

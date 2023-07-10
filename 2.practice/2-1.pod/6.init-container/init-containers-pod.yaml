@@ -6,14 +6,13 @@ spec:
   volumes:              # volumes卷稍后介绍，用于临时存储数据
     - name: workdir
       emptyDir: {}
-  initContainers:       # 提前初始化容器命令
+  initContainers:       # Pod在启动containers之前，先要【运行完】initContainers的所有容器，所以这些容器必须有终结，不能一直运行
     - name: install-index-html
       image: busybox:1.28
-      command:          # 执行命令
-        - wget
-        - "-O"
-        - "/work-dir/index.html"
-        - http://www.baidu.com
+      command:          # 执行命令,定义后会覆盖 Dockerfile 中的 CMD,ENTRYPOINT 命令
+        - /bin/sh
+        - "-c"
+        - "date > index.html"
       volumeMounts:
         - name: workdir
           mountPath: "/work-dir"

@@ -71,3 +71,7 @@ https://github.com/ContainerSolutions/kubernetes-examples
 https://github.com/dennyzhang/kubernetes-yaml-templates
 
 https://github.com/zhuchuangang/k8s-install-scripts
+
+https://k8s-examples.container-solutions.com/
+
+https://github.com/shuhongfan/DevOps

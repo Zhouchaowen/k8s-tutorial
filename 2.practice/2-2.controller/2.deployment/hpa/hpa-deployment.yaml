@@ -36,3 +36,5 @@ spec:
     - port: 80
   selector:
     run: hpa-php
+
+# kubectl autoscale deployment php --cpu-percent=50 --min=1 --max=10

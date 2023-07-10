@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-exec
+spec:
+  containers:
+    - name: liveness-exec
+      image: busybox
+      args:
+        - /bin/sh
+        - -c
+        - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+      livenessProbe:
+        exec:           # 存活探针 exec 类型，通过在容器内执行命令并检查返回值来确定容器的健康状态
+          command:      # 指定执行的命令
+            - cat
+            - /tmp/healthy
+        initialDelaySeconds: 5  # 第一次执行探针的时候要等待5秒
+        periodSeconds: 5        # 每隔5秒执行一次存活探针
+        timeoutSeconds: 5       # 探测超时，到了超时时间探测还没返回结果说明失败
+        successThreshold: 1     # 成功阈值，连续几次成才算成功
+        failureThreshold: 3     # 失败阈值，连续几次失败才算真失败
