@@ -1,20 +1,15 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: readiness-exec
+  name: liveness-tcp
 spec:
   containers:
     - name: liveness
-      image: busybox
-      args:
-        - /bin/sh
-        - -c
-        - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
-      readinessProbe:
-        exec:                   # 就绪探针 exec 类型，通过在容器内执行命令并检查返回值来确定容器的健康状态
-          command:
-            - cat
-            - /tmp/healthy
+      image: test-container:v1
+      livenessProbe:
+        grpc:                   # 存活探针 grpc 类型。
+          port: 8080            # 指定容器内接收探测请求的端口号为8080
+          service: "user"       # 服务名称
         initialDelaySeconds: 5  # 第一次执行探针的时候要等待5秒
         periodSeconds: 5        # 每隔5秒执行一次存活探针
         timeoutSeconds: 5       # 探测超时，到了超时时间探测还没返回结果说明失败

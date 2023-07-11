@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ps-http-get
+spec:
+  containers:
+    - name: post-start-http-get
+      image: nginx:alpine
+      lifecycle:
+        postStart:    # 容器创建后立即执行
+          httpGet:
+            host: 10.0.0.2
+            httpHeaders:
+              - name: xx
+                value: xx
+            path: /
+            port: 8080

@@ -5,9 +5,7 @@ metadata:
 spec:
   containers:
     - name: liveness
-      image: cnych/liveness
-      args:
-        - /server
+      image: test-container:v1
       livenessProbe:
         httpGet:            # 存活探针 httpGet 类型，通过向容器发送 HTTP 请求并检查响应状态码来确定容器的健康状态
           path: /health     # 指定发送探测请求的路径为/health

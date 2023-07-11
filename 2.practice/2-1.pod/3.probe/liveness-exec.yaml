@@ -15,6 +15,7 @@ spec:
           command:      # 指定执行的命令
             - cat
             - /tmp/healthy
+        terminationGracePeriodSeconds: 30 # K8S给你程序留的最后的缓冲时间，来处理关闭之前的操作
         initialDelaySeconds: 5  # 第一次执行探针的时候要等待5秒
         periodSeconds: 5        # 每隔5秒执行一次存活探针
         timeoutSeconds: 5       # 探测超时，到了超时时间探测还没返回结果说明失败

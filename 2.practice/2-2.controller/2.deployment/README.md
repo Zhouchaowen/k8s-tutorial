@@ -6,34 +6,15 @@
 
 Deployment 使得 Pod 和 ReplicaSet 能够进行声明式更新。
 
-------
+Deployment.Spec 定义 Deployment 预期行为的规约。
 
-- **apiVersion**: apps/v1
-- **kind**: Deployment
+- **selector** ([LabelSelector](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/common-definitions/label-selector/#LabelSelector))，必需, 供 Pod 所用的标签选择算符。通过此字段选择现有 ReplicaSet 的 Pod 集合， 被选中的 ReplicaSet 将受到这个 Deployment 的影响。此字段必须与 Pod 模板的标签匹配。
 
-- **metadata** ([ObjectMeta](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/common-definitions/object-meta/#ObjectMeta))
-- **spec** ([DeploymentSpec](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/deployment-v1/#DeploymentSpec)) Deployment 预期行为的规约。
-- **status** ([DeploymentStatus](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/deployment-v1/#DeploymentStatus)) 最近观测到的 Deployment 状态。
+- **template** ([PodTemplateSpec](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-template-v1/#PodTemplateSpec))，必需, template 描述将要创建的 Pod。
 
-DeploymentSpec 定义 Deployment 预期行为的规约。
+- **replicas** (int32) 预期 Pod 的数量。这是一个指针，用于辨别显式零和未指定的值。默认为 1。
 
-------
-
-- **selector** ([LabelSelector](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/common-definitions/label-selector/#LabelSelector))，必需
-
-  供 Pod 所用的标签选择算符。通过此字段选择现有 ReplicaSet 的 Pod 集合， 被选中的 ReplicaSet 将受到这个 Deployment 的影响。此字段必须与 Pod 模板的标签匹配。
-
-- **template** ([PodTemplateSpec](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-template-v1/#PodTemplateSpec))，必需
-
-  template 描述将要创建的 Pod。
-
-- **replicas** (int32)
-
-  预期 Pod 的数量。这是一个指针，用于辨别显式零和未指定的值。默认为 1。
-
-- **minReadySeconds** (int32)
-
-  新建的 Pod 在没有任何容器崩溃的情况下就绪并被系统视为可用的最短秒数。 默认为 0（Pod 就绪后即被视为可用）。
+- **minReadySeconds** (int32), 新建的 Pod 在没有任何容器崩溃的情况下就绪并被系统视为可用的最短秒数。 默认为 0（Pod 就绪后即被视为可用）。
 
 - **strategy** (DeploymentStrategy)
 

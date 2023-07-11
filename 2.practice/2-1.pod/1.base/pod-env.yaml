@@ -1,7 +1,8 @@
+# pod-env.yaml
 apiVersion: v1                  #k8sApi版本 kubectl api-resource 可以获取
 kind: Pod                       #资源类型
 metadata:                       #元数据:名称，命名空间，标签等
-  name: ngx-pod                 #service的名称
+  name: pod-env                 #service的名称
   labels:                       #自定义标签属性列表
     env: demo
     owner: zcw
@@ -11,8 +12,8 @@ spec:                           #期望状态：详细描述pod容器，卷等
       name: ngx                 #镜像名称
       command:                  #执行命令,定义后会覆盖 Dockerfile 中的 CMD,ENTRYPOINT 命令
         - /bin/sh
-          - -c
-          - "echo $(NGINX_ENV);sleep 3600;"
+        - -c
+        - "echo NGINX_ENV:$(NGINX_ENV);sleep 3600;"
       ports:
         - containerPort: 80     #端口
       env:                      #定义容器的环境变量

@@ -5,18 +5,18 @@ metadata:
   labels:
     app: multi-container-pod
 spec:
-  volumes:          # 声明挂载卷 nginx-vol
+  volumes:                    # 声明挂载卷 nginx-vol
     - name: nginx-vol
       emptyDir: {}
   containers:
-    - name: nginx-container  # 容器一
+    - name: nginx-container   # 容器一
       image: nginx:alpine
-      volumeMounts:  # 声明卷挂载
+      volumeMounts:           # 声明卷挂载
         - name: nginx-vol
           mountPath: /usr/share/nginx/html
-    - name: content-container # # 容器二
+    - name: content-container # 容器二
       image: alpine
       command: ["/bin/sh","-c","while true;do sleep 1; date > /app/index.html;done;"]
-      volumeMounts: # 挂载 nginx-vol 卷
+      volumeMounts:           # 挂载 nginx-vol 卷
         - name: nginx-vol
           mountPath: /app

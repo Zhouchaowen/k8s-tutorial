@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ps-exec
+spec:
+  containers:
+    - name: post-start-exec
+      image: nginx:alpine
+      lifecycle:
+        postStart:    # 容器创建后立即执行
+          exec:
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "echo Hello from the postStart handler > /usr/share/message"

@@ -17,7 +17,7 @@ spec:
             - "/bin/sh"
             - "-c"
             - "echo 'message from init' > /init-container-msg-mount-path/this"
-          image: busybox
+          image: busybox:1.28
           name: init-container
           volumeMounts:
             - mountPath: /init-container-mount-path
@@ -27,7 +27,7 @@ spec:
             - "/bin/sh"
             - "-c"
             - "while true; do cat /init-container-msg-mount-path/this; sleep 5; done"
-          image: busybox
+          image: busybox:1.28
           name: init-container-main
           volumeMounts:
             - mountPath: /init-container-mount-path
