@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-volume
+spec:
+  volumes:            # 声明一个 nfs 类型的存储卷，其名称为 logs-volume，nfs server 所在节点为 my-nfs-server.example.com
+    - name: logs-volume
+      nfs:
+        server: my-nfs-server.example.com     # nfs 的 host 地址
+        path: /my-nfs-volume                  # nfs 映射的目录
+        readOnly: true
+  containers:
+    - name: count
+      image: busybox:1.28
+      args:
+        - /bin/sh
+        - -c
+        - >
+          i=0;while true;do
+            echo "$i: $(date)" >> /var/log/1.log;
+            i=$((i+1));
+            sleep 1;
+          done
+      volumeMounts:
+        - name: logs-volume
+          mountPath: /var/log

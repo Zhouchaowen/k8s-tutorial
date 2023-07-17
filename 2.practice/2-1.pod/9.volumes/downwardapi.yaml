@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: downward-api
+  name: downward-api-volume
+spec:
+  containers:
+    - name: downward-api-container
+      image: busybox:1.28
+      command: ["sh", "-c"]
+      args:   # 打印挂载的文件内容
+        - while true; do
+          if [[ -e /etc/pod-info/labels ]]; then
+          echo -en '\n\n'; cat /etc/pod-info/labels; fi;
+          if [[ -e /etc/pod-info/ip ]]; then
+          echo -en '\n\n'; cat /etc/pod-info/annotations; fi;
+          if [[ -e /etc/pod-container/cpu_limit ]]; then
+          echo -en '\n'; cat /etc/pod-container/cpu_limit; fi;
+          if [[ -e /etc/pod-container/cpu_request ]]; then
+          echo -en '\n'; cat /etc/pod-container/cpu_request; fi;
+          if [[ -e /etc/pod-container/mem_limit ]]; then
+          echo -en '\n'; cat /etc/pod-container/mem_limit; fi;
+          if [[ -e /etc/pod-container/mem_request ]]; then
+          echo -en '\n'; cat /etc/pod-container/mem_request; fi;
+          sleep 5;
+          done;
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "125m"
+        limits:
+          memory: "64Mi"
+          cpu: "250m"
+      volumeMounts:
+        - name: pod-info
+          mountPath: /etc/pod-info
+        - name: pod-container
+          mountPath: /etc/pod-container
+  volumes:
+    - name: pod-info  # 获取 fieldPath 修改字段保存为文件
+      downwardAPI:
+        items:
+          - path: "labels"
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: "ip"
+            fieldRef:
+              fieldPath: status.podIP
+    - name: pod-container # 获取 resourceFieldRef 修改字段保存为文件
+      downwardAPI:
+        items:
+          - path: "cpu_limit"
+            resourceFieldRef:
+              containerName: downward-api-container
+              resource: limits.cpu
+              divisor: 1m
+          - path: "cpu_request"
+            resourceFieldRef:
+              containerName: downward-api-container
+              resource: requests.cpu
+              divisor: 1m
+          - path: "mem_limit"
+            resourceFieldRef:
+              containerName: downward-api-container
+              resource: limits.memory
+              divisor: 1Mi
+          - path: "mem_request"
+            resourceFieldRef:
+              containerName: downward-api-container
+              resource: requests.memory
+              divisor: 1Mi

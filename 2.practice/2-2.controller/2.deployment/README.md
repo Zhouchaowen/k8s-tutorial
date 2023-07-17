@@ -2,66 +2,8 @@
 
 # Deployment
 
-> 常规业务：扩缩容,滚动更新
-
-Deployment 使得 Pod 和 ReplicaSet 能够进行声明式更新。
-
-Deployment.Spec 定义 Deployment 预期行为的规约。
-
-- **selector** ([LabelSelector](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/common-definitions/label-selector/#LabelSelector))，必需, 供 Pod 所用的标签选择算符。通过此字段选择现有 ReplicaSet 的 Pod 集合， 被选中的 ReplicaSet 将受到这个 Deployment 的影响。此字段必须与 Pod 模板的标签匹配。
-
-- **template** ([PodTemplateSpec](https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-template-v1/#PodTemplateSpec))，必需, template 描述将要创建的 Pod。
-
-- **replicas** (int32) 预期 Pod 的数量。这是一个指针，用于辨别显式零和未指定的值。默认为 1。
-
-- **minReadySeconds** (int32), 新建的 Pod 在没有任何容器崩溃的情况下就绪并被系统视为可用的最短秒数。 默认为 0（Pod 就绪后即被视为可用）。
-
-- **strategy** (DeploymentStrategy)
-
-  **补丁策略：retainKeys**
-
-  将现有 Pod 替换为新 Pod 时所用的部署策略。
-
-  **DeploymentStrategy 描述如何将现有 Pod 替换为新 Pod。**
-
-  - **strategy.type** (string)
-
-    部署的类型。取值可以是 “Recreate” 或 “RollingUpdate”。默认为 RollingUpdate。
-
-  - **strategy.rollingUpdate** (RollingUpdateDeployment)
-
-    滚动更新这些配置参数。仅当 type = RollingUpdate 时才出现。
-
-    **控制滚动更新预期行为的规约。**
-
-    - **strategy.rollingUpdate.maxSurge** (IntOrString)
-
-      超出预期的 Pod 数量之后可以调度的最大 Pod 数量。该值可以是一个绝对数（例如： 5）或一个预期 Pod 的百分比（例如：10%）。如果 MaxUnavailable 为 0，则此字段不能为 0。 通过向上取整计算得出一个百分比绝对数。默认为 25%。例如：当此值设为 30% 时， 如果滚动更新启动，则可以立即对 ReplicaSet 扩容，从而使得新旧 Pod 总数不超过预期 Pod 数量的 130%。 一旦旧 Pod 被杀死，则可以再次对新的 ReplicaSet 扩容， 确保更新期间任何时间运行的 Pod 总数最多为预期 Pod 数量的 130%。
-
-      **IntOrString 是可以保存 int32 或字符串的一个类型。 当用于 JSON 或 YAML 编组和取消编组时，它会产生或消费内部类型。 例如，这允许你拥有一个可以接受名称或数值的 JSON 字段。**
-
-    - **strategy.rollingUpdate.maxUnavailable** (IntOrString)
-
-      更新期间可能不可用的最大 Pod 数量。该值可以是一个绝对数（例如： 5）或一个预期 Pod 的百分比（例如：10%）。通过向下取整计算得出一个百分比绝对数。 如果 MaxSurge 为 0，则此字段不能为 0。默认为 25%。 例如：当此字段设为 30%，则在滚动更新启动时 ReplicaSet 可以立即缩容为预期 Pod 数量的 70%。 一旦新的 Pod 就绪，ReplicaSet 可以再次缩容，接下来对新的 ReplicaSet 扩容， 确保更新期间任何时间可用的 Pod 总数至少是预期 Pod 数量的 70%。
-
-      **IntOrString 是可以保存 int32 或字符串的一个类型。 当用于 JSON 或 YAML 编组和取消编组时，它会产生或消费内部类型。 例如，这允许你拥有一个可以接受名称或数值的 JSON 字段。**
-
-- **revisionHistoryLimit** (int32)
-
-  保留允许回滚的旧 ReplicaSet 的数量。这是一个指针，用于辨别显式零和未指定的值。默认为 10。
-
-- **progressDeadlineSeconds** (int32)
-
-  Deployment 在被视为失败之前取得进展的最大秒数。Deployment 控制器将继续处理失败的部署， 原因为 ProgressDeadlineExceeded 的状况将被显示在 Deployment 状态中。 请注意，在 Deployment 暂停期间将不会估算进度。默认为 600s。
-
-- **paused** (boolean)
-
-  指示部署被暂停。
-
-实战 https://kubernetes.io/zh-cn/docs/tasks/run-application/run-stateless-application-deployment/
-
 ```yaml
-# nginx-deployment.yaml
+# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,12 +11,12 @@ metadata:
   namespace: default
 spec:
   replicas: 3     # 期望的 Pod 副本数量，默认值为1
-  selector:       # Label Selector，必须匹配 Pod 模板中的标签
+  selector:       # 选择器 selector, 匹配要控制的 Pod, 必须匹配 template 模板中的标签
     matchLabels:
       app: nginx
-  template:  # Pod 模板
+  template:       # 模板, 用于定义 Pod
     metadata:
-      labels:
+      labels:     # 用于匹配的标签(匹配成功的Pod会被Deployment纳管)
         app: nginx
     spec:
       containers:
@@ -88,7 +30,7 @@ spec:
 
 ```bash
 # 创建
-kubectl apply -f tmp.yaml 
+kubectl apply -f deployment.yaml
 
 # 查看deploy
 kubectl get deploy
@@ -101,7 +43,6 @@ kubectl get rs
 
 # 查看rs详细信息
 kubectl describe rs
-
 
 # 查看pod信息
 kubectl  get pods -o wide
@@ -170,7 +111,7 @@ kubectl scale deployment nginx-deploy --replicas=1
 只有Pod模板定义部分（Deployment的.spec.template）的属性发生改变时才会触发Deployment的rollout行为，对于其他的比如修改Pod的副本数量（spec.replicas）的值，则不会触发rollout行为。
 
 ```yaml
-# nginx-deployment.yaml
+# deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -197,7 +138,7 @@ spec:
 
 ```bash
 # 创建
-kubectl apply -f tmp.yaml 
+kubectl apply -f deployment.yaml
 
 # 查看pod信息
 kubectl  get pods -o wide
@@ -217,7 +158,7 @@ kubectl describe pod [podName]
 ```bash
 # update
 kubectl set image deployment/nginx-deploy nginx=nginx:1.9.1
-# or
+# or 通过打开yaml修改
 kubectl edit deployment/nginx-deploy
 
 # 窗口2查看 pod被替换的过程
@@ -358,12 +299,12 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  minReadySeconds: 5
+  minReadySeconds: 5     # 新建的 Pod 在没有任何容器崩溃的情况下就绪并被系统视为可用的最短秒数
   strategy:
-    type: RollingUpdate  # 指定更新策略：RollingUpdate和Recreate
+    type: RollingUpdate  # 取值可以是 Recreate 或 RollingUpdate 默认为 RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: 1        # 升级过程中最多可以比原先设置多出的 Pod 数量
+      maxUnavailable: 1  # 表示升级过程中最多有多少个 Pod 处于无法提供服务的状态
   template:
     metadata:
       labels:
@@ -385,4 +326,4 @@ spec:
 
 
 
-
+https://kubernetes.io/zh-cn/docs/tasks/run-application/run-stateless-application-deployment/

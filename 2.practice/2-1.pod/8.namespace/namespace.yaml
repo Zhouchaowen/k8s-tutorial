@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace       # 资源类型
+metadata:
+  name: ngx-namespace  # 命名空间名称 kube-example
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ngx-pod
+  namespace: ngx-namespace # 在 ngx-namespac 名称空间运行 Pod
+spec:
+  containers:
+    - image: nginx:alpine
+      name: ngx
+      ports:
+        - containerPort: 80

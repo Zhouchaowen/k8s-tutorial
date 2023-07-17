@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: empty-dir-volume
+spec:
+  volumes:            # 声明一个 emptyDir 类型的存储卷，其名称为 logs-volume
+    - name: logs-volume
+      emptyDir: {}
+  containers:
+    - name: count     # 容器 count 向 /var/log/1.log 写数据
+      image: busybox:1.28
+      args:
+        - /bin/sh
+        - -c
+        - >
+          i=0;while true;do
+            echo "$i: $(date)" >> /var/log/1.log;
+            i=$((i+1));
+            sleep 1;
+          done
+      volumeMounts:     # 将名为 logs-volume 的存储卷挂载到本 Pod 内的路径 /var/log 上
+        - name: logs-volume
+          mountPath: /var/log
+    - name: count-log   # 容器 count 读取 /var/log/1.log 的数据
+      image: busybox
+      args: [/bin/sh, -c, 'tail -n+1 -f /var/log/1.log']
+      volumeMounts:     # 将名为 logs-volume 的存储卷挂载到本 Pod 内的路径 /var/log 上
+        - name: logs-volume
+          mountPath: /var/log

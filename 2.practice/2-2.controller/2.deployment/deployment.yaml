@@ -5,12 +5,12 @@ metadata:
   namespace: default
 spec:
   replicas: 3     # 期望的 Pod 副本数量，默认值为1
-  selector:       # Label Selector，必须匹配 Pod 模板中的标签
+  selector:       # 选择器 selector, 匹配要控制的 Pod, 必须匹配 template 模板中的标签
     matchLabels:
       app: nginx
-  template:       # Pod 模板
+  template:       # 模板, 用于定义 Pod
     metadata:
-      labels:
+      labels:     # 用于匹配的标签(匹配成功的Pod会被Deployment纳管)
         app: nginx
     spec:
       containers:
