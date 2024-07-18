@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace         # 资源类型
+metadata:
+  name: role-namespace  # 命名空间名称 role-namespace
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: role-namespace   # 指定了它能产生作用的 namespace 是：role-namespace
+  name: example-role
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    # 所有权限 ["get", "list", "watch", "create", "update", "patch", "delete"]
+    verbs: ["get", "watch", "list"] # 允许“被作用者”，对 role-namespace 下面的 Pod 对象，进行 GET、WATCH 和 LIST 操作。

@@ -25,6 +25,11 @@ kubectl describe [deploy|pod|svc] resourceName # 获取资源执行详情
 kubectl exec -it podNameXXX /bin/bash	# 进入容器内部
 ```
 
+```bash
+# 删除所有pod
+kubectl get pod | awk '{print $1}' | xargs kubectl delete pod
+```
+
 ## Node
 
 ```bash

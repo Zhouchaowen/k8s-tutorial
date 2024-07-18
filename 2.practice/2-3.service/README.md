@@ -107,6 +107,25 @@ nslookup  nginx-app.default.svc.cluster.local
 
 当创建 backend Service 时，Kubernetes 会给它指派一个虚拟 IP 地址，比如 10.0.0.1。假设 Service 的端口是 1234，该 Service 会被集群中所有的 kube-proxy 实例观察到。当 kube-proxy 看到一个新的 Service，它会安装一系列的 iptables 规则，从 VIP 重定向到 `per-Service` 规则。 该 `per-Service` 规则连接到 `per-Endpoint` 规则，该 `per-Endpoint` 规则会重定向（目标 `NAT`）到后端的 Pod。
 
+```bash
+# iptables-save |grep nginx-app
+-A KUBE-NODEPORTS -p tcp -m comment --comment "default/nginx-app:nginx-port" -m tcp --dport 30001 -j KUBE-SVC-UQR5TH3ZQIZEBD6O
+-A KUBE-SEP-2H4KJZECMHT57KKR -s 10.244.2.69/32 -m comment --comment "default/nginx-app:nginx-port" -j KUBE-MARK-MASQ
+-A KUBE-SEP-2H4KJZECMHT57KKR -p tcp -m comment --comment "default/nginx-app:nginx-port" -m tcp -j DNAT --to-destination 10.244.2.69:80
+-A KUBE-SEP-S5XYKPYPWBKVLYRN -s 10.244.1.205/32 -m comment --comment "default/nginx-app:nginx-port" -j KUBE-MARK-MASQ
+-A KUBE-SEP-S5XYKPYPWBKVLYRN -p tcp -m comment --comment "default/nginx-app:nginx-port" -m tcp -j DNAT --to-destination 10.244.1.205:80
+-A KUBE-SEP-UTE6HPD7C2MCYUY5 -s 10.244.1.206/32 -m comment --comment "default/nginx-app:nginx-port" -j KUBE-MARK-MASQ
+-A KUBE-SEP-UTE6HPD7C2MCYUY5 -p tcp -m comment --comment "default/nginx-app:nginx-port" -m tcp -j DNAT --to-destination 10.244.1.206:80
+-A KUBE-SERVICES -d 10.105.47.24/32 -p tcp -m comment --comment "default/nginx-app:nginx-port cluster IP" -m tcp --dport 8080 -j KUBE-SVC-UQR5TH3ZQIZEBD6O
+-A KUBE-SVC-UQR5TH3ZQIZEBD6O ! -s 10.244.0.0/16 -d 10.105.47.24/32 -p tcp -m comment --comment "default/nginx-app:nginx-port cluster IP" -m tcp --dport 8080 -j KUBE-MARK-MASQ
+-A KUBE-SVC-UQR5TH3ZQIZEBD6O -p tcp -m comment --comment "default/nginx-app:nginx-port" -m tcp --dport 30001 -j KUBE-MARK-MASQ
+-A KUBE-SVC-UQR5TH3ZQIZEBD6O -m comment --comment "default/nginx-app:nginx-port" -m statistic --mode random --probability 0.33333333349 -j KUBE-SEP-S5XYKPYPWBKVLYRN
+-A KUBE-SVC-UQR5TH3ZQIZEBD6O -m comment --comment "default/nginx-app:nginx-port" -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-UTE6HPD7C2MCYUY5
+-A KUBE-SVC-UQR5TH3ZQIZEBD6O -m comment --comment "default/nginx-app:nginx-port" -j KUBE-SEP-2H4KJZECMHT57KKR
+```
+
+
+
 ## ipvs模式
 
 在 ipvs 模式下，kube-proxy 监视 Kubernetes 服务和端点，调用 `netlink` 接口相应地创建 IPVS 规则， 并定期将 IPVS 规则与 Kubernetes 服务和端点同步。该控制循环可确保 IPVS 状态与所需状态匹配。访问服务时，IPVS　将流量定向到后端 Pod 之一。

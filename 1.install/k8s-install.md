@@ -482,3 +482,14 @@ source /usr/share/bash-completion/bash_completion
 
 
 
+```bash
+// 安装cilium
+kubeadm init \
+--image-repository registry.aliyuncs.com/google_containers \
+--skip-phases=addon/kube-proxy
+```
+
+
+
+
+

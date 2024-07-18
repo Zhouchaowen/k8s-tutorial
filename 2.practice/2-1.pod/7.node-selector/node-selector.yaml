@@ -8,4 +8,5 @@ spec:
       image: busybox:1.28
       command: ["sleep", "3600"]
   nodeSelector:
-    node-role.kubernetes.io/master: "k8s-node01" # 该Pod只会调度到node01节点上
+    diskType: ssd # 该 Pod 永远只能运行在携带了 "diskType: ssd" 标签（Label）的节点上；否则，它将调度失败。
+    # NodeName: k8s-node01 # 改标签表示 Pod 只能调度到名称为 k8s-node01 的节点上

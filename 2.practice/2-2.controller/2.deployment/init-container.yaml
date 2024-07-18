@@ -12,7 +12,7 @@ spec:
       labels:
         app: init-container-app
     spec:
-      initContainers:
+      initContainers:     # 初始化容器,等价于Pod中的用法
         - command:
             - "/bin/sh"
             - "-c"

@@ -47,11 +47,9 @@ kind: Service           # 资源类型 Service
 metadata:
   name: nginx-app
 spec:
-  type: NodePort        # 指定 Service 的类型 NodePort 分配主机映射
+  type: ClusterIP       # 指定 Service 的类型 ClusterIP 分配主机映射
   selector:             # 匹配 标签为 app: nginx-app 的容器, 管理这些容器
     app: nginx-app
   ports:
     - name: nginx-port  # 为映射取个名称
       port: 8080        # 映射的端口
-      targetPort: 80    # 目标端口
-      nodePort: 30001   # 节点端口
